@@ -1,17 +1,17 @@
 import { Sheet, Table } from "@mui/joy";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { action } from "../slice";
+import { action } from "../../slice";
 import moment from "moment";
 
 const EpisodeListing = ({ ids }) => {
   const dispatch = useDispatch();
-  const { isLoading, data } = useSelector((state) => state.episode.listing);
+  const { data } = useSelector((state) => state.episode.listing);
 
   useEffect(() => {
     dispatch(action.fetchEpisodes({ ids }));
   }, [dispatch, ids]);
-console.log(data)
+
   return (
     <Sheet>
       {data && (

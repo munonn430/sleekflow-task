@@ -1,16 +1,16 @@
 import axios from "../axiosConfig";
 
 const contactApi = {
-  getContacts: ({ name, status, gender }) =>
-    axios
-      .get("/character", {
-        params: {
-          name,
-          status,
-          gender,
-        },
-      })
-      .then((res) => res),
+  getContacts: ({ page, name, status, gender }) => {
+    return axios.get("/character", {
+      params: {
+        page,
+        name,
+        status,
+        gender,
+      },
+    });
+  },
   getContactById: ({ id }) => axios.get(`/character/${id}`).then((res) => res),
 };
 

@@ -5,15 +5,12 @@ import {
   FormLabel,
   Grid,
   Input,
-  InputLabel,
-  MenuItem,
   Option,
   Select,
-  TextField,
   Typography,
 } from "@mui/joy";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { action } from "../slice";
 import { useDispatch, useSelector } from "react-redux";
 import { ContactListing } from "../components";
@@ -23,26 +20,61 @@ const ContactPage = () => {
   const { isLoading, info, data } = useSelector(
     (state) => state.contact.listing
   );
-  const [search, setSearch] = useState("");
   const [filter, setFilter] = useState({
+    name: null,
     status: null,
     gender: null,
   });
+  const [nextPage, setNextPage] = useState(2);
+  const [hasMoreToFetch, setHasMoreToFetch] = useState(true);
 
   useEffect(() => {
     dispatch(
       action.fetchContacts({
-        name: search,
+        page: 1,
+        ...filter,
+      })
+    )
+      .unwrap()
+      .then((res) => {
+        if (res.info.pages === 1) {
+          setHasMoreToFetch(false);
+        }
+      })
+      .catch((err) => console.log(err));
+  }, [dispatch, filter]);
+
+  const resetData = useCallback(() => {
+    dispatch(action.reset());
+    setHasMoreToFetch(true);
+    setNextPage(2);
+  }, [dispatch]);
+
+  const onFilterClear = () => {
+    setFilter((filter) => ({
+      ...filter,
+      status: null,
+      gender: null,
+    }));
+    resetData();
+  };
+
+  const fetchMoreData = useCallback(() => {
+    dispatch(
+      action.fetchContacts({
+        page: nextPage,
         ...filter,
       })
     );
-  }, [dispatch, search, filter]);
+    setNextPage((page) => page + 1);
+    if (info?.pages && nextPage >= info.pages) {
+      setHasMoreToFetch(false);
+    }
+  }, [dispatch, nextPage, filter, info?.pages]);
 
-  const onFilterClear = () => {
-    setFilter({
-      status: null,
-      gender: null,
-    });
+  const onFilter = (filteredValue) => {
+    resetData();
+    setFilter(filteredValue);
   };
 
   return (
@@ -55,7 +87,15 @@ const ContactPage = () => {
           size="sm"
           startDecorator={<SearchRoundedIcon />}
           placeholder="Search contact"
-          onChange={(event) => setSearch(event.target.value)}
+          value={filter.name}
+          onChange={(event) =>
+            onFilter((filter) => {
+              return {
+                ...filter,
+                name: event.target.value,
+              };
+            })
+          }
         />
         <Grid
           container
@@ -73,7 +113,7 @@ const ContactPage = () => {
                 placeholder="Filter by status"
                 slotProps={{ button: { sx: { whiteSpace: "nowrap" } } }}
                 onChange={(event, newValue) =>
-                  setFilter((filter) => {
+                  onFilter((filter) => {
                     return {
                       ...filter,
                       status: newValue,
@@ -96,7 +136,7 @@ const ContactPage = () => {
                 placeholder="Filter by gender"
                 slotProps={{ button: { sx: { whiteSpace: "nowrap" } } }}
                 onChange={(event, newValue) =>
-                  setFilter((filter) => ({
+                  onFilter((filter) => ({
                     ...filter,
                     gender: newValue,
                   }))
@@ -110,11 +150,18 @@ const ContactPage = () => {
             </FormControl>
           </Grid>
           <Grid xs={4}>
-            <Button onClick={onFilterClear}>Clear Filters</Button>
+            {(filter.status || filter.gender) && (
+              <Button onClick={onFilterClear}>Clear Filters</Button>
+            )}
           </Grid>
         </Grid>
       </Box>
-      <ContactListing data={data} />
+      <ContactListing
+        isLoading={isLoading}
+        data={data}
+        fetchMoreData={fetchMoreData}
+        hasMoreToFetch={hasMoreToFetch}
+      />
     </Box>
   );
 };

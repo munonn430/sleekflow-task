@@ -1,6 +1,6 @@
-import Layout from "./Layout";
-import Sidebar from "./Sidebar";
-import ContactListing from "./ContactListing";
-import EpisodeListing from "./EpisodeListing";
+import Layout from "./Layout/Layout";
+import Sidebar from "./Layout/Sidebar";
+import ContactListing from "./Contact/ContactListing";
+import EpisodeListing from "./Episode/EpisodeListing";
 
 export { Layout, Sidebar, ContactListing, EpisodeListing };

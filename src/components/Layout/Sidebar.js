@@ -5,7 +5,6 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
-  Typography,
 } from "@mui/material";
 import { forwardRef } from "react";
 import { Link } from "react-router-dom";
@@ -26,9 +25,12 @@ const Sidebar = () => {
       variant="permanent"
       anchor="left"
     >
-      <Typography variant="h6" className="p-5">
-        Rick and Morty
-      </Typography>
+      <Link className="px-8" to="/">
+        <img
+          src="https://logos-world.net/wp-content/uploads/2022/01/Rick-And-Morty-Logo.png"
+          alt="logo"
+        />
+      </Link>
       <Divider />
       <List>
         <ListItem key="contact" disablePadding>

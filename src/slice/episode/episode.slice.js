@@ -9,7 +9,6 @@ export const episodeSlice = createSlice({
       data: [],
     },
   },
-  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchEpisodes.pending, (state) => {
@@ -21,8 +20,5 @@ export const episodeSlice = createSlice({
       });
   },
 });
-
-// Action creators are generated for each case reducer function
-export const {} = episodeSlice.actions;
 
 export default episodeSlice.reducer;

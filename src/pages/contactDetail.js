@@ -4,16 +4,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import moment from "moment";
 import { EpisodeListing } from "../components";
-import { fetchContactById } from "../slice/contact.thunkAction";
+import { action } from "../slice";
 
 const ContactDetailPage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const { isLoading, data } = useSelector((state) => state.contact.detail);
-  const isAlive = data?.status === "Alive";
+  const { data } = useSelector((state) => state.contact.detail);
 
   useEffect(() => {
-    dispatch(fetchContactById({ id }));
+    dispatch(action.fetchContactById({ id }));
   }, [dispatch, id]);
 
   return (

@@ -1,20 +1,30 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchContactById, fetchContacts } from "./contact.thunkAction";
 
+const INIT_STATE = {
+  listing: {
+    isLoading: true,
+    info: null,
+    data: [],
+  },
+  detail: {
+    isLoading: false,
+    data: null,
+  },
+};
+
 export const contactSlice = createSlice({
   name: "contact",
-  initialState: {
-    listing: {
-      isLoading: true,
-      info: null,
-      data: [],
-    },
-    detail: {
-      isLoading: false,
-      data: null,
+  initialState: INIT_STATE,
+  reducers: {
+    reset(state) {
+      state.listing = {
+        isLoading: true,
+        info: null,
+        data: [],
+      };
     },
   },
-  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchContacts.pending, (state) => {
@@ -23,7 +33,10 @@ export const contactSlice = createSlice({
       .addCase(fetchContacts.fulfilled, (state, action) => {
         const { info, results } = action.payload;
         state.listing.info = info;
-        state.listing.data = results;
+        state.listing.data = [...state.listing.data, ...results];
+        state.listing.isLoading = false;
+      })
+      .addCase(fetchContacts.rejected, (state) => {
         state.listing.isLoading = false;
       })
       .addCase(fetchContactById.pending, (state) => {
@@ -37,6 +50,6 @@ export const contactSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const {} = contactSlice.actions;
+export const { reset } = contactSlice.actions;
 
 export default contactSlice.reducer;
